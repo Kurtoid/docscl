@@ -82,10 +82,10 @@ def main():
         print('files:')
         for item in items:
             print('{0} ({1})'.format(item['name'], item['id']))
-        if items.length > 1:
+        if len(items) > 1:
             print('First file selected')
     item = items[0]
-    request = service.files.export_media(fileId=item['id'],
+    request = service.files().export_media(fileId=item['id'],
                                          mimeType='text/plain')
     fh = io.BytesIO()
     downloader = MediaIoBaseDownload(fh, request)
@@ -94,8 +94,8 @@ def main():
         status, done = downloader.next_chunk()
         print("Download %d%%." % int(status.progress() * 100))
     fileText = fh.getvalue()
-    file = open(item['name']+'.txt', 'w')
-    file.write(fileText)
+    file = open(item['name']+'.txt', 'wb')
+    file.write(bytes(fileText))
     file.close()
     """
     file_id = getId(service, sys.argv[1])
@@ -121,6 +121,7 @@ def getId(service, filename=nofileselectedid):
     if not items:
         print('No files found')
         return
+
     return items
 
 if __name__ == "__main__":
